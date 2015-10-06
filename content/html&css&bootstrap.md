@@ -112,11 +112,11 @@
   		border-spacing:10px 50px;
   		}
 
-* HTML <td> 标签的 rowspan 属性:规定单元格可横跨的行数。
+* HTML < td> 标签的 rowspan 属性:规定单元格可横跨的行数。
 
 	rowspan="0" 指示浏览器横跨到表格部分的最后一行（thead、tbody 或者 tfoot）。
 
-* HTML <td> 标签的 colspan 属性:规定单元格可横跨的列数。
+* HTML < td> 标签的 colspan 属性:规定单元格可横跨的列数。
 
 	colspan="0" 指示浏览器横跨到列组的最后一列。
 
@@ -133,15 +133,15 @@
 
 	+ 屏幕阅读器可以利用该属性。
 	
-* <span> 标签被用来组合文档中的行内元素。
+* < span> 标签被用来组合文档中的行内元素。
 	
-	span 没有固定的格式表现。当对它应用样式时，它才会产生视觉上的
+	- span 没有固定的格式表现。当对它应用样式时，它才会产生视觉上的
 
-	变化。
+		变化。
 	
-	可以为 span 应用 id 或 class 属性，这样既可以增加适当的语义，又便于
+	- 可以为 span 应用 id 或 class 属性，这样既可以增加适当的语义，又便于
 	
-	对 span 应用样式。
+		对 span 应用样式。
 
 * 相邻兄弟选择器（Adjacent sibling selector）可选择紧接在另一元素后的元素，且二者有相同父元素。
 
@@ -161,33 +161,32 @@
 
 	- 值：
 		
-	 + automatic	默认。列宽度由单元格内容设定。	 
-	 + fixed	列宽由表格宽度和列宽度设定。
-	 + inherit	规定应该从父元素继承 table-layout 属性的值。__任何的版本的 Internet Explorer （包括 IE8）都不支持属性值 "inherit"__
+	 + automatic：默认。列宽度由单元格内容设定。	 
+	 + fixed：列宽由表格宽度和列宽度设定。
+	 + inherit：规定应该从父元素继承 table-layout 属性的值。__任何的版本的 Internet Explorer （包括 IE8）都不支持属性值 "inherit"__
 	 
 
 * !important 语法:覆盖原本的权重。
 
 * 所有的 inline 元素都没有 width 和 height。
   
-    可以设置 display: block; 把 inline 元素当作 block 元素来处理，再设置 width 和 height。
+    可以设置 display: block；把 inline 元素当作 block 元素来处理，再设置 width 和 height。
 
 * 背景：background:#FFF url(http://www.divcss5.com/img201301/divcss5-logo-2013.gif) no-repeat 10px 5px fixed
 
-	10px:左边距是10px;  
+	- 10px:左边距是10px;  
 
-	5px:右边距是5px
+	- 5px:右边距是5px
 
-	background-color 背景颜色
+	- background-color 背景颜色
 
-	background-image 背景图片:url(图片地址路径) 
+	- background-image 背景图片:url(图片地址路径) 
 
-	background-repeat 背景重复：no-repeat; repeat-x; repeat-y
+	- background-repeat 背景重复：no-repeat; repeat-x; repeat-y
 
-	background-attachment 背景图片是固定(fixed)还是滚动(scroll)
+	- background-attachment 背景图片是固定(fixed)还是滚动(scroll)
 
-	background-position 背景图片的定位 : 默认值 0% 0% 第一个值是水平位置，第二个值是垂直位置。
-	center,top/center/bottom left/center/right
+	- background-position 背景图片的定位 : 默认值 0% 0% 第一个值是水平位置，第二个值是垂直位置。	或者为center,top/center/bottom left/center/right。
 
 * HTML <img> 标签的 alt 属性: 它规定在图像无法显示时的替代文本。
 
@@ -307,3 +306,41 @@
 
  	animation 所有动画属性的简写属性，除了 animation-play-state 属性。
 	其他属性点击[这里](http://www.w3school.com.cn/css3/css3_animation.asp "CSS3 动画")查看。
+
+* HTML < label> 标签： 为input 元素定义标注（标记）。
+	
+	- label 元素不会向用户呈现任何特殊效果。
+
+	- 当用户选择该标签时，浏览器就会自动将焦点转到和标签相关的表单控件上。
+
+	- "for" 属性可把 label 绑定到另外一个元素。请把 "for" 属性的值设置为相关元素的 id 属性的值。
+
+	- "form"属性规定 label 字段所属的一个或多个表单。
+	
+* HTML <textarea> 标签：定义多行的文本输入控件。
+
+	- 文本区中可容纳无限数量的文本，其中的文本的默认字体是等宽字体（通常是 Courier）。
+
+	- 可以通过 cols 和 rows 属性来规定 textarea 的尺寸，不过更好的办法是使用 CSS 的 height 和 width 属性。
+	- 在文本输入区内的文本行间，用 "%OD%OA" （回车/换行）进行分隔。
+
+
+* HTML < form> 标签：用于为用户输入创建 HTML 表单。
+
+	常用属性：
+
+	- action	="URL" ：规定当提交表单时向此url发送表单数据。
+
+	- method="get/post" ：规定用于发送 form-data 的 HTTP 方法。
+
+	- name="form_name" ：规定表单的名称。
+	
+* < input> 与< button>的异同：
+	
+	- <input type="button" /> （< input type="button" /> ）这就是一个按钮。如果你不写javascript 的话，按下去什么也不会发生。
+
+	- <input type="submit" />  < input type="submit" /> 这样的按钮用户点击之后会自动提交 form，除非你写了javascript阻止它。不是一个画面元素，而是一个表单（Form）元素，和文本输入是一样的，都属于“数据”的一部分（特征是，有value属性，而且该属性的值，会被传送到server端，可以拿来用），而不是样式的一部分。这种表现和数据混淆的设计，是早期web标准还比较简陋的时代的遗产。
+
+	- <button> < button>这个按钮放在 form 中也会点击自动提交，比前两个的优点是按钮的内容不光可以有文字，还可以有图片等多媒体内容。（当然，前两个用图片背景也可以做到）。它的缺点是不同的浏览器得到的 value 值不同；可能还有其他的浏览器兼容问题。 
+	
+	- < a >标签只有在点击时才会触发事件，而< button >和< input >则按回车键时也会触发。
