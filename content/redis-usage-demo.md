@@ -1,4 +1,4 @@
-#常见 Redis 使用场景 Demo
+# 常见 Redis 使用场景 Demo
 
 缓存 ｜ 爬虫 ｜ 消息管道
 
@@ -14,7 +14,7 @@
 - 缓存
 - 消息管道
 
-我们先依次演示：内存数据结构存储、数据库、缓存、消息管道。
+我们先依次演示：内存数据结构存储、缓存、消息管道。
 通过实例理解名词。
 
 ## 安装
@@ -26,7 +26,7 @@ $ brew install redis
 
 **澄清**
 
-很多攻略给出的 redis 安装方式是：
+很多攻略给出的 Redis 安装方式是：
 
 ```bash
 wget http://download.redis.io/releases/redis-stable.tar.gz
@@ -35,7 +35,7 @@ cd redis-stable/
 make
 sudo make install
 ```
-这是以前官网推荐的方式，理由是 brew / apt-get 等包管理器里的版本太老。
+这是以前官网推荐的方式，理由是 brew / apt-get 安装的版本太老。
 
 实测，当前 brew 安装的就是最新 stable 版 3.07，所以无需编译安装。
 
@@ -46,6 +46,9 @@ sudo make install
 ```bash
 $ redis-server
 ```
+
+如果要运行在后台，在命令后加一个 `&` ，即：`redis-server &`
+
 
 打开另外一个终端，
 运行命令行界面（Command Line Interface，简称 cli)，连接到 Server
@@ -80,36 +83,33 @@ OK
 OK
 127.0.0.1:6379> get age
 "16"
-127.0.0.1:6379> set google http://www.google.com
-OK
-127.0.0.1:6379> get google
-"http://www.google.com"
 127.0.0.1:6379> get name
 "jackon"
 ```
 
-#### 常用命令 keys ／ flushed / del
+#### 常用命令 keys ／ flushdb / del
 
 ```bash
 127.0.0.1:6379> keys *
 1) "age"
 2) "gender"
 3) "name"
-4) "google"
 127.0.0.1:6379> del name
 (integer) 1
 127.0.0.1:6379> keys *
 1) "age"
 2) "gender"
-3) "google"
 127.0.0.1:6379> flushdb
 OK
 127.0.0.1:6379> keys *
 (empty list or set)
 ```
 
-#### 编程语言接入 －－Python 为例
+#### 编程语言接入－－Python 为例
 
+搭建基础的 Python 开发环境，参考[搭建 PYTHON 开发环境](http://jackon.me/posts/python-dev-env/)
+
+安装 Python 的 redis 包：
 ```bash
 $ pip install redis
 Collecting redis
@@ -179,16 +179,16 @@ for i in range(3):
     r.sadd('total', i)
     r.lpush('seq', i)
 
-print '%s in set' % r.scard('total')  # card is short for cardinality
-print '%s in seq' % r.llen('seq')  # len is short for length
+print '%s elements in set' % r.scard('total')  # card is short for cardinality
+print '%s elements in seq' % r.llen('seq')  # len is short for length
 ```
 
 执行结果：
 
 ```bash
 $ python test2.py
-3 in set
-6 in seq
+3 elements in set
+6 elements in seq
 ```
 
 redis-cli 查看执行结果
@@ -244,12 +244,10 @@ redis-cli 查看执行结果
 基本的 Key-Value 存储 ＋“到期”功能
 
 到期功能，
-即 set key value 时，可以为 key 设置一个到期时间，比如 30秒 后。
+即 set 命令设置 key ＝ value 时，可以为 key 设置一个到期时间，比如 30秒 后。
 到期后，Redis 自动删除这个键值对。其他的键值对不受影响。
 
 到期功能，有助于避免总的键集无限增长。
-
-**黑科技：写爬虫的时候，我非常喜欢用 TTL 来控制 HTTP request 的频率。**
 
 基本用法演示：
 
@@ -271,7 +269,6 @@ OK
 ```
 
 重新设置相同的值，会覆盖之前的数据，TTL 重新开始倒计时。
-
 ```bash
 127.0.0.1:6379> setex ice 10 "I'm melting..."
 OK
@@ -283,95 +280,43 @@ OK
 (integer) 9
 ```
 
-压箱底的一段 Python 爬虫代码
+
+**黑科技：当 Redis 的 TTL 遇到了爬虫**
 
 ```python
- -*- Encoding: utf-8 -*-
+# -*- Encoding: utf-8 -*-
 import redis
 import time
-import random
-
-DELAY_BOTTOM = 2
-DELAY_TOP = 7
 
 r = redis.StrictRedis()
 r.flushdb()
 
-def wait(f):
-    lock_name = 'http-lock'
 
-    def _wrap_func(*args, **kwargs):
-        t = r.ttl(lock_name)
-        if t > 0:
-            print 'sleep %s seconds' % t
-            time.sleep(t)
-
-        n_t = int(random.uniform(DELAY_BOTTOM, DELAY_TOP))
-        r.setex(lock_name, n_t, 'locking')
-        return f(*args, **kwargs)
-    return _wrap_func
+def req():
+    time.sleep(1)
+    print 'requesting jackon.me...'
 
 
-def request1(url):
-    print 'requesting %s...' % url
+lock_name = 'http-lock'
+THRESHOLD = 3
 
+while True:
+    t = r.ttl(lock_name)
+    if t > 0:
+        print 'sleep %s seconds' % t
+        time.sleep(t)
 
-@wait
-def request2(url):
-    print 'requesting %s...' % url
-
-
-if __name__ == '__main__':
-    for i in range(10):
-        request1('http://jackon.me')
-
-    print '-' * 20
-
-    for i in range(10):
-        request2('http://jackon.me')
-```
-
-执行结果：
-
-```bash
-$ python crawler.py
-requesting http://jackon.me...
-requesting http://jackon.me...
-requesting http://jackon.me...
-requesting http://jackon.me...
-requesting http://jackon.me...
-requesting http://jackon.me...
-requesting http://jackon.me...
-requesting http://jackon.me...
-requesting http://jackon.me...
-requesting http://jackon.me...
---------------------
-requesting http://jackon.me...
-sleep 6 seconds
-requesting http://jackon.me...
-sleep 6 seconds
-requesting http://jackon.me...
-sleep 5 seconds
-requesting http://jackon.me...
-sleep 3 seconds
-requesting http://jackon.me...
-sleep 6 seconds
-requesting http://jackon.me...
-sleep 2 seconds
-requesting http://jackon.me...
-sleep 6 seconds
-requesting http://jackon.me...
-sleep 5 seconds
-requesting http://jackon.me...
-sleep 2 seconds
-requesting http://jackon.me...
+    r.setex(lock_name, THRESHOLD, 'locking')
+    req()
 ```
 
 一旦爬虫被封，进入 redis，setex 一下 'http-lock' 的 TTL。
 爬虫自动进入休眠状态。
 
-基于访问频率的反爬虫策略，基本都可以失效了。
 
 #### 发布 － 订阅
 
-几十行代码搞定一个多 channel 聊天室的 Server 端
+如果简单，以至于任何文字都是多余的。
+
+看图
+![redis-sub-pub](https://raw.githubusercontent.com/JackonYang/IOut.me/master/images/mac-etc/redis-sub-pub.png)
